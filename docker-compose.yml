@@ -1,0 +1,19 @@
+services:
+  markmap:
+    build:
+      context: ./docker_markmap
+      dockerfile: Dockerfile
+    volumes:
+      - ./project:/project
+      - ./html:/html
+    working_dir: /project
+    entrypoint: ["/entrypoint.sh"]
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+      - ./html:/usr/share/nginx/html:ro
+    ports:
+      - "8778:80"
+

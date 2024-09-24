@@ -1,0 +1,37 @@
+
+      
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:                                         # a free machine-readable name for this job
+    runs-on: ubuntu-latest                        # specify the base operating system
+    steps:
+      - name: Checkout repo content               # fetch the contents of the repository
+        uses: actions/checkout@v2
+      - uses: addnab/docker-run-action@v3
+        with:
+          image: leopoul/markmap:1.0.0
+          options: -v ${{ github.workspace }}/markdown:/app:rw
+          run: |
+            echo "Running Script"
+            markmap /app/test.md -o /app/test.html
+      - name: Prepare build environment
+        run: pwd && ls -al ${{ github.workspace }}/markdown
+      - name: Deploy on github pages              # Use a third-party plugin to upload the content
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages
+          folder: markdown
